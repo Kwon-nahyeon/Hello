@@ -1,0 +1,60 @@
+﻿<Window x:Class="WpfApp1.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="DICOM Viewer"
+        WindowState="Maximized"
+        WindowStartupLocation="CenterScreen"
+        MouseWheel="Window_MouseWheel">
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <!-- 이미지 영역 -->
+            <ColumnDefinition Width="28" />
+            <!-- 슬라이스 스크롤바 -->
+            <ColumnDefinition Width="420" />
+            <!-- 태그 리스트 영역 -->
+        </Grid.ColumnDefinitions>
+
+        <!-- 이미지 -->
+        <Border Grid.Column="0" Background="Black">
+            <Image x:Name="DicomImageView" Stretch="Uniform"/>
+        </Border>
+
+        <!-- 슬라이스 넘기는 스크롤바 -->
+        <ScrollBar x:Name="SliceScrollBar"
+                   Grid.Column="1"
+                   Orientation="Vertical"
+                   Minimum="0"
+                   ValueChanged="SliceScrollBar_ValueChanged"
+                   SmallChange="1"
+                   LargeChange="10" />
+
+        <!-- 태그 리스트 패널 -->
+        <Border Grid.Column="2" Background="#111" Padding="10">
+            <DockPanel>
+                <TextBlock DockPanel.Dock="Top"
+                           Text="DICOM Tags (Key / Value)"
+                           Foreground="White"
+                           FontSize="16"
+                           FontWeight="Bold"
+                           Margin="0,0,0,10"/>
+
+                <!-- Key/Value ListView -->
+                <ListView x:Name="TagListView"
+                          ItemsSource="{Binding TagItems, RelativeSource={RelativeSource AncestorType=Window}}"
+                          Background="#1A1A1A"
+                          Foreground="White"
+                          BorderBrush="#333"
+                          BorderThickness="1">
+                    <ListView.View>
+                        <GridView>
+                            <GridViewColumn Header="Key" Width="180" DisplayMemberBinding="{Binding Key}" />
+                            <GridViewColumn Header="Value" Width="210" DisplayMemberBinding="{Binding Value}" />
+                        </GridView>
+                    </ListView.View>
+                </ListView>
+            </DockPanel>
+        </Border>
+    </Grid>
+</Window>
