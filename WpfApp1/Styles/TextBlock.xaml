@@ -1,0 +1,14 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <SolidColorBrush x:Key="TextBlockForegroundBrush" Color="#EAEAF0"/>
+
+    <Style x:Key="AppTextBlockStyle" TargetType="TextBlock">
+        <Setter Property="Foreground" Value="{StaticResource TextBlockForegroundBrush}"/>
+        <Setter Property="FontFamily" Value="Segoe UI"/>
+        <Setter Property="FontSize" Value="13"/>
+        <Setter Property="TextWrapping" Value="Wrap"/>
+        <Setter Property="TextOptions.TextFormattingMode" Value="Ideal"/>
+        <Setter Property="TextOptions.TextRenderingMode" Value="ClearType"/>
+    </Style>
+</ResourceDictionary>

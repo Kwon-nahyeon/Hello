@@ -1,0 +1,90 @@
+﻿<Window x:Class="WpfApp1.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="DICOM Viewer"
+        WindowState="Maximized"
+        WindowStartupLocation="CenterScreen"
+        MouseWheel="Window_MouseWheel">
+
+    <DockPanel>
+
+        <!-- 🔹 상단 버튼 -->
+        <StackPanel DockPanel.Dock="Top"
+                    Orientation="Horizontal"
+                    Height="70"
+                    Background="#202640">
+            <Button Width="160" Margin="10" Content="파일 열기" Click="OpenFile_Click"/>
+            <Button Width="160" Margin="10" Content="폴더 열기" Click="OpenFolder_Click"/>
+            <Button Width="160" Margin="10" Content="비식별 저장" Click="Anonymize_Click"/>
+            <Button Width="160" Margin="10" Content="AQ" Click="RunAQ_Click"/>
+        </StackPanel>
+
+        <!-- 🔹 하단 로그 -->
+        <Border DockPanel.Dock="Bottom"
+                Height="140"
+                Background="#111"
+                BorderBrush="#333"
+                BorderThickness="1,1,0,0">
+            <DockPanel>
+                <TextBlock DockPanel.Dock="Top"
+                           Text="AQ / 로그 출력"
+                           Foreground="White"
+                           FontWeight="Bold"
+                           Margin="6,6,0,6"/>
+                <ListBox x:Name="LogList"
+                         Background="#111"
+                         Foreground="White"
+                         Margin="6"/>
+            </DockPanel>
+        </Border>
+
+        <!-- 🔹 중앙 영역 기존 Grid 유지 -->
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="28" />
+                <ColumnDefinition Width="420" />
+            </Grid.ColumnDefinitions>
+
+            <!-- 이미지 -->
+            <Border Grid.Column="0" Background="Black">
+                <Image x:Name="DicomImageView" Stretch="Uniform"/>
+            </Border>
+
+            <!-- 슬라이스 -->
+            <ScrollBar x:Name="SliceScrollBar"
+                       Grid.Column="1"
+                       Orientation="Vertical"
+                       Minimum="0"
+                       SmallChange="1"
+                       LargeChange="10"
+                       ValueChanged="SliceScrollBar_ValueChanged"/>
+
+            <!-- 태그 -->
+            <Border Grid.Column="2" Background="#111" Padding="10">
+                <DockPanel>
+                    <TextBlock DockPanel.Dock="Top"
+                               Text="DICOM Tags (Key / Value)"
+                               Foreground="White"
+                               FontSize="16"
+                               FontWeight="Bold"
+                               Margin="0,0,0,10"/>
+
+                    <ListView x:Name="TagListView"
+                              ItemsSource="{Binding TagItems}"
+                              Background="#1A1A1A"
+                              Foreground="White"
+                              BorderBrush="#333"
+                              BorderThickness="1">
+                        <ListView.View>
+                            <GridView>
+                                <GridViewColumn Header="Key" Width="180" DisplayMemberBinding="{Binding Key}" />
+                                <GridViewColumn Header="Value" Width="210" DisplayMemberBinding="{Binding Value}" />
+                            </GridView>
+                        </ListView.View>
+                    </ListView>
+                </DockPanel>
+            </Border>
+        </Grid>
+    </DockPanel>
+</Window>
