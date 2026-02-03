@@ -3,12 +3,11 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="DICOM Viewer"
         WindowState="Maximized"
-        WindowStartupLocation="CenterScreen"
-        MouseWheel="Window_MouseWheel">
+        WindowStartupLocation="CenterScreen">
 
     <DockPanel>
 
-        <!-- 🔹 상단 버튼 -->
+        <!-- 상단 버튼 -->
         <StackPanel DockPanel.Dock="Top"
                     Orientation="Horizontal"
                     Height="70"
@@ -19,9 +18,9 @@
             <Button Width="160" Margin="10" Content="AQ" Click="RunAQ_Click"/>
         </StackPanel>
 
-        <!-- 🔹 하단 로그 -->
+        <!-- 하단 로그 -->
         <Border DockPanel.Dock="Bottom"
-                Height="140"
+                Height="160"
                 Background="#111"
                 BorderBrush="#333"
                 BorderThickness="1,1,0,0">
@@ -30,38 +29,145 @@
                            Text="AQ / 로그 출력"
                            Foreground="White"
                            FontWeight="Bold"
-                           Margin="6,6,0,6"/>
+                           Margin="8,6,0,6"/>
                 <ListBox x:Name="LogList"
                          Background="#111"
                          Foreground="White"
-                         Margin="6"/>
+                         Margin="8"/>
             </DockPanel>
         </Border>
 
-        <!-- 🔹 중앙 영역 기존 Grid 유지 -->
+        <!-- 중앙 영역: 왼쪽(3면/컨트롤) + 오른쪽(태그) -->
         <Grid>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="28" />
                 <ColumnDefinition Width="420" />
             </Grid.ColumnDefinitions>
 
-            <!-- 이미지 -->
-            <Border Grid.Column="0" Background="Black">
-                <Image x:Name="DicomImageView" Stretch="Uniform"/>
-            </Border>
+            <!-- 왼쪽 -->
+            <DockPanel Grid.Column="0" Background="Black">
 
-            <!-- 슬라이스 -->
-            <ScrollBar x:Name="SliceScrollBar"
-                       Grid.Column="1"
-                       Orientation="Vertical"
-                       Minimum="0"
-                       SmallChange="1"
-                       LargeChange="10"
-                       ValueChanged="SliceScrollBar_ValueChanged"/>
+                <!-- WW/WC + 인덱스 컨트롤 -->
+                <Border DockPanel.Dock="Top"
+                        Background="#0F0F0F"
+                        BorderBrush="#222"
+                        BorderThickness="0,0,0,1"
+                        Padding="10">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
 
-            <!-- 태그 -->
-            <Border Grid.Column="2" Background="#111" Padding="10">
+                        <!-- Slice -->
+                        <StackPanel Grid.Column="0" Margin="0,0,10,0">
+                            <TextBlock Foreground="White" Text="Axial Slice" Margin="0,0,0,6"/>
+                            <ScrollBar x:Name="SliceScrollBar"
+                                       Orientation="Horizontal"
+                                       Minimum="0"
+                                       SmallChange="1"
+                                       LargeChange="10"
+                                       ValueChanged="SliceScrollBar_ValueChanged"/>
+                        </StackPanel>
+
+                        <!-- Window Center -->
+                        <StackPanel Grid.Column="1" Margin="0,0,10,0">
+                            <TextBlock Foreground="White" Text="Window Center (WC)" Margin="0,0,0,6"/>
+                            <Slider x:Name="WindowCenterSlider"
+                                    Minimum="-2000" Maximum="3000"
+                                    ValueChanged="WindowSlider_ValueChanged"/>
+                        </StackPanel>
+
+                        <!-- Window Width -->
+                        <StackPanel Grid.Column="2">
+                            <TextBlock Foreground="White" Text="Window Width (WW)" Margin="0,0,0,6"/>
+                            <Slider x:Name="WindowWidthSlider"
+                                    Minimum="1" Maximum="8000"
+                                    ValueChanged="WindowSlider_ValueChanged"/>
+                        </StackPanel>
+                    </Grid>
+                </Border>
+
+                <!-- 3면 분할 + 사지탈/코로날 위치 -->
+                <Grid Margin="10">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+
+                    <!-- 2x2 그리드: Axial / Sagittal / Coronal -->
+                    <Grid Grid.Row="0">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+
+                        <!-- Axial -->
+                        <Border Grid.Row="0" Grid.Column="0" Margin="6" Background="Black" BorderBrush="#222" BorderThickness="1">
+                            <DockPanel>
+                                <TextBlock DockPanel.Dock="Top" Text="Axial" Foreground="White" Margin="8,6,0,6"/>
+                                <Image x:Name="AxialImage"
+                                       Stretch="Uniform"
+                                       MouseWheel="Axial_MouseWheel"/>
+                            </DockPanel>
+                        </Border>
+
+                        <!-- Sagittal -->
+                        <Border Grid.Row="0" Grid.Column="1" Margin="6" Background="Black" BorderBrush="#222" BorderThickness="1">
+                            <DockPanel>
+                                <TextBlock DockPanel.Dock="Top" Text="Sagittal" Foreground="White" Margin="8,6,0,6"/>
+                                <Image x:Name="SagittalImage" Stretch="Uniform"/>
+                            </DockPanel>
+                        </Border>
+
+                        <!-- Coronal -->
+                        <Border Grid.Row="1" Grid.Column="0" Margin="6" Background="Black" BorderBrush="#222" BorderThickness="1">
+                            <DockPanel>
+                                <TextBlock DockPanel.Dock="Top" Text="Coronal" Foreground="White" Margin="8,6,0,6"/>
+                                <Image x:Name="CoronalImage" Stretch="Uniform"/>
+                            </DockPanel>
+                        </Border>
+
+                        <!-- 빈 칸(추후 확장용) -->
+                        <Border Grid.Row="1" Grid.Column="1" Margin="6" Background="#050505" BorderBrush="#222" BorderThickness="1">
+                            <TextBlock Text="(Reserved)"
+                                       Foreground="#666"
+                                       VerticalAlignment="Center"
+                                       HorizontalAlignment="Center"/>
+                        </Border>
+                    </Grid>
+
+                    <!-- Sagittal/Coronal 위치 슬라이더 -->
+                    <Grid Grid.Row="1" Margin="6,10,6,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+
+                        <StackPanel Grid.Column="0" Margin="0,0,10,0">
+                            <TextBlock Foreground="White" Text="Sagittal X" Margin="0,0,0,6"/>
+                            <Slider x:Name="SagittalSlider"
+                                    Minimum="0" Maximum="511"
+                                    ValueChanged="OrthoSlider_ValueChanged"/>
+                        </StackPanel>
+
+                        <StackPanel Grid.Column="1">
+                            <TextBlock Foreground="White" Text="Coronal Y" Margin="0,0,0,6"/>
+                            <Slider x:Name="CoronalSlider"
+                                    Minimum="0" Maximum="511"
+                                    ValueChanged="OrthoSlider_ValueChanged"/>
+                        </StackPanel>
+                    </Grid>
+                </Grid>
+            </DockPanel>
+
+            <!-- 오른쪽 태그 -->
+            <Border Grid.Column="1" Background="#111" Padding="10">
                 <DockPanel>
                     <TextBlock DockPanel.Dock="Top"
                                Text="DICOM Tags (Key / Value)"
@@ -85,6 +191,7 @@
                     </ListView>
                 </DockPanel>
             </Border>
+
         </Grid>
     </DockPanel>
 </Window>
